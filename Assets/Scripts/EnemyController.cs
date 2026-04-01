@@ -4,7 +4,7 @@ using UnityEngine.AI;
 public class EnemyController : MonoBehaviour
 {
 
-    [SerializeField] GameObject target;
+    [SerializeField] public GameObject target;
 
     NavMeshAgent agent;
 
