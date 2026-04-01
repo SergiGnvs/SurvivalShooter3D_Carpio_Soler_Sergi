@@ -1,0 +1,34 @@
+{
+    "name": "DiabloInput",
+    "maps": [
+        {
+            "name": "Main",
+            "id": "e426cbf9-8e35-4cd0-b44a-f032405a0c73",
+            "actions": [
+                {
+                    "name": "Move",
+                    "type": "Button",
+                    "id": "e5d2aa09-ca9b-4740-a03c-bebbd50343a0",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "05121fd7-2468-4f41-80e0-050ffd569639",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
