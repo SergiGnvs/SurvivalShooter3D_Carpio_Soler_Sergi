@@ -1,6 +1,8 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
 using static UnityEngine.GraphicsBuffer;
 
 public class PlayerController : MonoBehaviour
@@ -8,14 +10,22 @@ public class PlayerController : MonoBehaviour
 
     enum TargetType
     {
-        Floor, Enemy
+        None, Floor, Enemy
     }
 
     struct Target
     {
-        public TargetType type;
-        public GameObject body;
-        public Vector3 pos;
+
+        public Target(TargetType type, RaycastHit hit)
+        {
+            Type = type;
+            Hit = hit;
+        }
+
+        public TargetType Type;
+        public RaycastHit Hit;
+
+        
     }
 
     NavMeshAgent m_agent;
@@ -25,7 +35,13 @@ public class PlayerController : MonoBehaviour
 
     Vector3 mousePos = new Vector3();
 
+    Target m_target = new Target();
+
     [SerializeField] LayerMask Mask; //string[] Layers;
+
+    [SerializeField] float attack_range = 10f;
+    [SerializeField] float cooldown = 1f;
+    bool can_shoot = true;
 
     void Awake()
     {
@@ -51,26 +67,28 @@ public class PlayerController : MonoBehaviour
 
         if (m_moveAction.WasPressedThisFrame())
         {
+
             MoveTo();
         }
-        /*
-        else
+
+        switch (m_target.Type)
         {
-            switch (m_target.type)
-            {
-                
-                case TargetType.Enemy:
-                    m_agent.destination = m_target.body;
-                        brake;
-
-                case TargetType.Floor:
-                    break;
-
-                default:
-                    break;
-            }
+            case TargetType.Enemy:
+                m_agent.destination = m_target.Hit.transform.position;
+                if (Vector3.Distance(transform.position, m_agent.destination) <= attack_range & can_shoot)
+                {
+                    can_shoot = false;
+                    m_agent.isStopped = true;
+                    transform.LookAt(m_agent.destination);
+                    Shoot();
+                }
+                break;
+            case TargetType.Floor:
+            case TargetType.None:
+            default:
+                break;
         }
-        */
+
 
     }
 
@@ -81,6 +99,22 @@ public class PlayerController : MonoBehaviour
         if (Physics.Raycast(Camera.main.ScreenPointToRay(mousePos), out hit, 100, LayerMask.GetMask("Floor" )))
         {
             string layerName = LayerMask.LayerToName(hit.collider.gameObject.layer);
+
+            switch (layerName)
+            {
+                case "Enemy":
+                    m_target = new Target(TargetType.Enemy, hit);
+                    break;
+                case "Floor":
+                    m_target = new Target(TargetType.Floor, hit);
+                    break;
+                case "Interactable":
+                default:
+                    break;
+            }
+
+            m_agent.isStopped = false;
+            m_agent.destination = m_target.Hit.point;
             /*
             switch (layerName)
             {
@@ -107,4 +141,24 @@ public class PlayerController : MonoBehaviour
         }
     }
      
+    void Shoot()
+    {
+        Debug.Log("BANG!!");
+        RaycastHit hit;
+        Physics.Raycast(transform.position, Vector3.Normalize(m_target.Hit.transform.position - transform.position), out hit, attack_range);
+        Debug.DrawLine(transform.position, hit.point, Color.yellow, 0.1f);
+        StartCoroutine(ShootCooldown());    
+    }
+
+    IEnumerator ShootCooldown()
+    {
+        yield return new WaitForSeconds(cooldown);
+        can_shoot = true;
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, attack_range);
+    }
 }

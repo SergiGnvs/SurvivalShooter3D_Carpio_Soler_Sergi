@@ -7,6 +7,7 @@ public class SpawnerController : MonoBehaviour
     [SerializeField] GameObject player;
 
     [SerializeField] float max_time;
+    [SerializeField] float spawn_radius = 1;
 
     public bool canSpawn = true;
 
@@ -27,7 +28,7 @@ public class SpawnerController : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, 1);
+        Gizmos.DrawWireSphere(transform.position, spawn_radius);
     }
 
     IEnumerator timer()
@@ -35,7 +36,13 @@ public class SpawnerController : MonoBehaviour
         while (canSpawn)
         {
             yield return new WaitForSeconds(max_time);
-            GameObject new_object = Instantiate(new_entity, transform.position, Quaternion.identity);
+            float radius = Random.Range(0, spawn_radius);
+            float angle = Random.Range(0, 2*Mathf.PI);
+            Vector3 pos = new Vector3(1, 1, 0) * radius;
+            Vector3 finalPosition = Vector3.Normalize(angle * pos) * radius;
+            
+
+            GameObject new_object = Instantiate(new_entity, transform.position + finalPosition, Quaternion.identity);
             new_object.GetComponent<EnemyController>().target = player;
         }
     }
