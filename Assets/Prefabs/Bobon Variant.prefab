@@ -8,6 +8,42 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3627828894995277586, guid: 0c947e4ee3c0c13468e8ff432f52aaca, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.26326543
+      objectReference: {fileID: 0}
+    - target: {fileID: 3627828894995277586, guid: 0c947e4ee3c0c13468e8ff432f52aaca, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.22834015
+      objectReference: {fileID: 0}
+    - target: {fileID: 3627828894995277586, guid: 0c947e4ee3c0c13468e8ff432f52aaca, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.24600005
+      objectReference: {fileID: 0}
+    - target: {fileID: 3627828894995277586, guid: 0c947e4ee3c0c13468e8ff432f52aaca, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.45000005
+      objectReference: {fileID: 0}
+    - target: {fileID: 3627828894995277586, guid: 0c947e4ee3c0c13468e8ff432f52aaca, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.82533175
+      objectReference: {fileID: 0}
+    - target: {fileID: 3627828894995277586, guid: 0c947e4ee3c0c13468e8ff432f52aaca, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.5646481
+      objectReference: {fileID: 0}
+    - target: {fileID: 3627828894995277586, guid: 0c947e4ee3c0c13468e8ff432f52aaca, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3627828894995277586, guid: 0c947e4ee3c0c13468e8ff432f52aaca, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3627828894995277586, guid: 0c947e4ee3c0c13468e8ff432f52aaca, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 68.756
+      objectReference: {fileID: 0}
     - target: {fileID: 5887014917301299414, guid: 0c947e4ee3c0c13468e8ff432f52aaca, type: 3}
       propertyPath: m_LocalScale.x
       value: 2
@@ -72,6 +108,46 @@ PrefabInstance:
       propertyPath: m_Name
       value: Bobon Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 6965003242161820442, guid: 0c947e4ee3c0c13468e8ff432f52aaca, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.26326543
+      objectReference: {fileID: 0}
+    - target: {fileID: 6965003242161820442, guid: 0c947e4ee3c0c13468e8ff432f52aaca, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.28633976
+      objectReference: {fileID: 0}
+    - target: {fileID: 6965003242161820442, guid: 0c947e4ee3c0c13468e8ff432f52aaca, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.246
+      objectReference: {fileID: 0}
+    - target: {fileID: 6965003242161820442, guid: 0c947e4ee3c0c13468e8ff432f52aaca, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.45
+      objectReference: {fileID: 0}
+    - target: {fileID: 6965003242161820442, guid: 0c947e4ee3c0c13468e8ff432f52aaca, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.82533175
+      objectReference: {fileID: 0}
+    - target: {fileID: 6965003242161820442, guid: 0c947e4ee3c0c13468e8ff432f52aaca, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.5646481
+      objectReference: {fileID: 0}
+    - target: {fileID: 6965003242161820442, guid: 0c947e4ee3c0c13468e8ff432f52aaca, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6965003242161820442, guid: 0c947e4ee3c0c13468e8ff432f52aaca, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6965003242161820442, guid: 0c947e4ee3c0c13468e8ff432f52aaca, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 68.756
+      objectReference: {fileID: 0}
+    - target: {fileID: 8134973529711066816, guid: 0c947e4ee3c0c13468e8ff432f52aaca, type: 3}
+      propertyPath: data
+      value: 
+      objectReference: {fileID: 11400000, guid: 073dcdd3c1ebfa449b01d99d01f3b060, type: 2}
     - target: {fileID: 9171275396667237505, guid: 0c947e4ee3c0c13468e8ff432f52aaca, type: 3}
       propertyPath: m_Mesh
       value: 

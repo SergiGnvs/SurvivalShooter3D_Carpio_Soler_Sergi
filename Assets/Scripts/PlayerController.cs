@@ -35,7 +35,7 @@ public class PlayerController : MonoBehaviour
 
     Vector3 mousePos = new Vector3();
 
-    Target m_target = new Target();
+    Target m_target = new Target(TargetType.None, new RaycastHit());
 
     [SerializeField] LayerMask Mask; //string[] Layers;
 
@@ -158,7 +158,14 @@ public class PlayerController : MonoBehaviour
 
     private void OnDrawGizmos()
     {
+
+        if(m_target.Type != TargetType.None)
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere(m_agent.destination, 0.5f);
+        }
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, attack_range);
+
     }
 }
