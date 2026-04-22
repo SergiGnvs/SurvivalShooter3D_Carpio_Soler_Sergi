@@ -31,4 +31,15 @@ public class EnemyController : MonoBehaviour
 
         if (target) agent.SetDestination(target.transform.position);
     }
+
+    public void GetDamaged(float amount)
+    {
+        curHealth -= amount;
+
+        if(curHealth <= 0)
+        {
+            Destroy(this.gameObject);
+        }
+
+    }
 }
