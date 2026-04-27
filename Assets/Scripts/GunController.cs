@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class GunController : MonoBehaviour, Iweapon
+public class GunController : MonoBehaviour
 {
 
     [SerializeField] GunData gunData;
@@ -24,6 +24,8 @@ public class GunController : MonoBehaviour, Iweapon
     public void Shoot(EnemyController target)
     {
         if (canShoot == false) return;
+
+        Debug.Log("BANG!!");
 
         RaycastHit hit;
         Vector3 origin = barrel.transform.position;

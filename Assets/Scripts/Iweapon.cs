@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public interface Iweapon
+public interface IWeapon
 {
     void Shoot(EnemyController target);
     void Reload();

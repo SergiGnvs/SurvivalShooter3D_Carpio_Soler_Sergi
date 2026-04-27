@@ -32,6 +32,12 @@ public class PlayerController : MonoBehaviour
     DiabloInput m_input;
 
     InputAction m_moveAction;
+    InputAction[] m_switchWeaponActions = new InputAction[3];
+
+
+    [SerializeField] GameObject[] Weapons = new GameObject[3];
+    IWeapon currentWeapon;
+    int currentWeaponNumber;
 
     Vector3 mousePos = new Vector3();
 
@@ -52,12 +58,28 @@ public class PlayerController : MonoBehaviour
         m_input.Main.Enable();
 
         m_moveAction = m_input.Main.Move;
+
+        m_switchWeaponActions = new InputAction[3] { m_input.Main.Weapon1, m_input.Main.Weapon2, m_input.Main.Weapon3 };
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+
+        for (int i = 0; i < Weapons.Length; i++) 
+        {
+            if (i == 0)
+            {
+                currentWeapon = Weapons[i].GetComponent<IWeapon>();
+                currentWeaponNumber = i;
+            }
+            else
+            {
+                Weapons[i].SetActive(false);
+            }
+        }
+
+        currentWeapon = Weapons[0].GetComponent<IWeapon>();
     }
 
     // Update is called once per frame
@@ -75,12 +97,11 @@ public class PlayerController : MonoBehaviour
         {
             case TargetType.Enemy:
                 m_agent.destination = m_target.Hit.transform.position;
-                if (Vector3.Distance(transform.position, m_agent.destination) <= attack_range & can_shoot)
+                if (Vector3.Distance(transform.position, m_agent.destination) <= currentWeapon.GetRange())
                 {
-                    can_shoot = false;
                     m_agent.isStopped = true;
                     transform.LookAt(m_agent.destination);
-                    Shoot();
+                    currentWeapon.Shoot(m_target.Hit.transform.GetComponent<EnemyController>());
                 }
                 break;
             case TargetType.Floor:
@@ -89,6 +110,21 @@ public class PlayerController : MonoBehaviour
                 break;
         }
 
+        for(int i = 0;i < m_switchWeaponActions.Length; i++)
+        {
+            if (m_switchWeaponActions[i].WasPressedThisFrame())
+            {
+                if (Weapons[i] & currentWeapon != Weapons[i].GetComponent<IWeapon>())
+                {
+
+                    Weapons[currentWeaponNumber].SetActive(true);
+                    currentWeapon = Weapons[i].GetComponent<IWeapon>();
+                    currentWeapon.SwitchWeapon();
+                    currentWeaponNumber = i;
+                    break;
+                }
+            }
+        }
 
     }
 
@@ -141,14 +177,14 @@ public class PlayerController : MonoBehaviour
         }
     }
      
-    void Shoot()
+    /*void Shoot()
     {
         Debug.Log("BANG!!");
         RaycastHit hit;
         Physics.Raycast(transform.position, Vector3.Normalize(m_target.Hit.transform.position - transform.position), out hit, attack_range);
         Debug.DrawLine(transform.position, hit.point, Color.yellow, 0.1f);
         StartCoroutine(ShootCooldown());    
-    }
+    }*/
 
     IEnumerator ShootCooldown()
     {
@@ -165,7 +201,11 @@ public class PlayerController : MonoBehaviour
             Gizmos.DrawWireSphere(m_agent.destination, 0.5f);
         }
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, attack_range);
+        if(currentWeapon != null)
+        {
+            Gizmos.DrawWireSphere(transform.position, currentWeapon.GetRange());
+        }
+        
 
     }
 }

@@ -44,9 +44,10 @@ public class SpawnerController : MonoBehaviour
             Vector3 newPosition = transform.position + Quaternion.Euler(0, angle, 0) * Vector3.forward * radius;
 
             GameObject newObject = Instantiate(new_entity, newPosition, Quaternion.identity);
+            newObject.GetComponent<EnemyController>().target = player;
             //newObject.GetComponent<Collider>().enabled = false;EnemyController>();
 
-                /*
+            /*    
             Vector3 pos = new Vector3(1, 1, 0) * radius;
             Vector3 finalPosition = Vector3.Normalize(angle * pos) * radius;
             
