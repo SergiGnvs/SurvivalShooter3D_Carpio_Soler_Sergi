@@ -33,6 +33,8 @@ public class PlayerController : MonoBehaviour
 
     InputAction m_moveAction;
     InputAction[] m_switchWeaponActions = new InputAction[3];
+    InputAction m_saveAction;
+    InputAction[] m_resetAction;
 
 
     [SerializeField] GameObject[] Weapons = new GameObject[3];
@@ -49,6 +51,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float cooldown = 1f;
     bool can_shoot = true;
 
+    [SerializeField] GameData gameData;
+
+    public float baseSpeed = 5f;
+
     void Awake()
     {
         m_agent = GetComponent<NavMeshAgent>();
@@ -60,6 +66,9 @@ public class PlayerController : MonoBehaviour
         m_moveAction = m_input.Main.Move;
 
         m_switchWeaponActions = new InputAction[3] { m_input.Main.Weapon1, m_input.Main.Weapon2, m_input.Main.Weapon3 };
+
+        m_saveAction = m_input.Main.SaveAndQuit;
+        m_resetAction = m_input.Main.ResetGame;
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -80,6 +89,13 @@ public class PlayerController : MonoBehaviour
         }
 
         currentWeapon = Weapons[0].GetComponent<IWeapon>();
+
+        EnemyController[] enemies = FindObjectsOfType<EnemyController>();
+
+        SaveSystem.Load(gameData, gameObject, enemies);
+
+        m_agent.speed = baseSpeed * gameData.playerSpeedMultiplier;
+
     }
 
     // Update is called once per frame
@@ -124,6 +140,16 @@ public class PlayerController : MonoBehaviour
                     break;
                 }
             }
+        }
+
+        if (m_saveAction.WasPressedThisFrame())
+        {
+            SaveAndQuit();
+        }
+
+        if (m_resetAction.WasPressedThisFrame())
+        {
+            ResetGame();
         }
 
     }
@@ -208,4 +234,28 @@ public class PlayerController : MonoBehaviour
         
 
     }
+
+    void SaveAndQuit()
+    {
+        gameData.playerPosition = transform.position;
+
+        EnemyController[] enemies = FindObjectsOfType<EnemyController>();
+
+        SaveSystem.Save(gameData, enemies);
+
+        Application.Quit();
+
+    }
+
+    void ResetGame()
+    {
+
+        SaveSystem.DeleteSave();
+
+        gameData.ResetData();
+
+        UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex);
+    }
+
+
 }

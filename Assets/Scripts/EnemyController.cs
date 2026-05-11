@@ -11,6 +11,10 @@ public class EnemyController : MonoBehaviour
 
     [SerializeField] public GameObject target;
 
+    [SerializeField] GameData gameData;
+
+    public float baseSpeed = 3.5f;
+
     NavMeshAgent agent;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -23,6 +27,8 @@ public class EnemyController : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
 
         Debug.Log(maxHealth);
+
+        agent.speed = baseSpeed * gameData.enemySpeedMultiplier;
     }
 
     // Update is called once per frame
