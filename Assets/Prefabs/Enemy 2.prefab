@@ -235,7 +235,7 @@ GameObject:
   - component: {fileID: 6332332801899891211}
   - component: {fileID: 8134973529711066816}
   m_Layer: 7
-  m_Name: Enemy
+  m_Name: Enemy 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -289,7 +289,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 843337d1aa49b2042a534c7467853c6a, type: 2}
+  - {fileID: 2100000, guid: 5ac9ec1ca60687147ba198c7cf3dd432, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -343,8 +343,8 @@ NavMeshAgent:
   m_GameObject: {fileID: 6879426463439188650}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.5
-  m_Speed: 1
+  m_Radius: 0.7
+  m_Speed: 2
   m_Acceleration: 300
   avoidancePriority: 50
   m_AngularSpeed: 300

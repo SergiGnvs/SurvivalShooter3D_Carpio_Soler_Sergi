@@ -26,7 +26,7 @@ public class EnemyController : MonoBehaviour
 
         agent = GetComponent<NavMeshAgent>();
 
-        Debug.Log(maxHealth);
+        
 
         agent.speed = baseSpeed * gameData.enemySpeedMultiplier;
     }
@@ -40,6 +40,7 @@ public class EnemyController : MonoBehaviour
 
     public void GetDamaged(float amount)
     {
+        Debug.Log("DAÑO RECIBIDO POR ENEMIGO");
         curHealth -= amount;
 
         if(curHealth <= 0)

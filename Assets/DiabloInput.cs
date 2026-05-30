@@ -144,6 +144,15 @@ public partial class @DiabloInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Shoot"",
+                    ""type"": ""Button"",
+                    ""id"": ""a961deb6-087c-47fb-8bb8-58622c3219c7"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -212,6 +221,17 @@ public partial class @DiabloInput: IInputActionCollection2, IDisposable
                     ""action"": ""SaveAndQuit"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e0aae25a-5ffd-4287-b21e-9181ad325ee9"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Shoot"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -226,6 +246,7 @@ public partial class @DiabloInput: IInputActionCollection2, IDisposable
         m_Main_Weapon3 = m_Main.FindAction("Weapon3", throwIfNotFound: true);
         m_Main_ResetGame = m_Main.FindAction("ResetGame", throwIfNotFound: true);
         m_Main_SaveAndQuit = m_Main.FindAction("SaveAndQuit", throwIfNotFound: true);
+        m_Main_Shoot = m_Main.FindAction("Shoot", throwIfNotFound: true);
     }
 
     ~@DiabloInput()
@@ -312,6 +333,7 @@ public partial class @DiabloInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_Main_Weapon3;
     private readonly InputAction m_Main_ResetGame;
     private readonly InputAction m_Main_SaveAndQuit;
+    private readonly InputAction m_Main_Shoot;
     /// <summary>
     /// Provides access to input actions defined in input action map "Main".
     /// </summary>
@@ -347,6 +369,10 @@ public partial class @DiabloInput: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Main/SaveAndQuit".
         /// </summary>
         public InputAction @SaveAndQuit => m_Wrapper.m_Main_SaveAndQuit;
+        /// <summary>
+        /// Provides access to the underlying input action "Main/Shoot".
+        /// </summary>
+        public InputAction @Shoot => m_Wrapper.m_Main_Shoot;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -391,6 +417,9 @@ public partial class @DiabloInput: IInputActionCollection2, IDisposable
             @SaveAndQuit.started += instance.OnSaveAndQuit;
             @SaveAndQuit.performed += instance.OnSaveAndQuit;
             @SaveAndQuit.canceled += instance.OnSaveAndQuit;
+            @Shoot.started += instance.OnShoot;
+            @Shoot.performed += instance.OnShoot;
+            @Shoot.canceled += instance.OnShoot;
         }
 
         /// <summary>
@@ -420,6 +449,9 @@ public partial class @DiabloInput: IInputActionCollection2, IDisposable
             @SaveAndQuit.started -= instance.OnSaveAndQuit;
             @SaveAndQuit.performed -= instance.OnSaveAndQuit;
             @SaveAndQuit.canceled -= instance.OnSaveAndQuit;
+            @Shoot.started -= instance.OnShoot;
+            @Shoot.performed -= instance.OnShoot;
+            @Shoot.canceled -= instance.OnShoot;
         }
 
         /// <summary>
@@ -502,5 +534,12 @@ public partial class @DiabloInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnSaveAndQuit(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Shoot" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnShoot(InputAction.CallbackContext context);
     }
 }

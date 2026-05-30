@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9697c3251af483b45a3f6976a849fd1c, type: 3}
   m_Name: RevolverData
   m_EditorClassIdentifier: 
-  damage: 12
-  range: 10
-  maxAmmo: 6
-  reloadTime: 2
-  fireRate: 0.2
+  Damage: 30
+  Range: 20
+  MaxAmmo: 6
+  ReloadTime: 3
+  FireRate: 0.02

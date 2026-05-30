@@ -8,12 +8,12 @@ using static UnityEngine.GraphicsBuffer;
 public class PlayerController : MonoBehaviour
 {
 
-    enum TargetType
+    public enum TargetType
     {
-        None, Floor, Enemy
+        none, Enemy, position
     }
 
-    struct Target
+    public struct Target
     {
 
         public Target(TargetType type, RaycastHit hit)
@@ -25,31 +25,26 @@ public class PlayerController : MonoBehaviour
         public TargetType Type;
         public RaycastHit Hit;
 
-        
+
     }
 
     NavMeshAgent m_agent;
     DiabloInput m_input;
+    Target m_target = new Target(TargetType.none, new RaycastHit());
+    [SerializeField] LayerMask mask; //string[] Layers;
 
     InputAction m_moveAction;
+    InputAction m_interaction;
     InputAction[] m_switchWeaponActions = new InputAction[3];
     InputAction m_saveAction;
-    InputAction[] m_resetAction;
+    InputAction m_resetAction;
 
 
     [SerializeField] GameObject[] Weapons = new GameObject[3];
-    IWeapon currentWeapon;
-    int currentWeaponNumber;
+    IWeapon CurrentWeaponController;
+    [SerializeField] GameObject CurrentWeapon;
 
-    Vector3 mousePos = new Vector3();
-
-    Target m_target = new Target(TargetType.None, new RaycastHit());
-
-    [SerializeField] LayerMask Mask; //string[] Layers;
-
-    [SerializeField] float attack_range = 10f;
-    [SerializeField] float cooldown = 1f;
-    bool can_shoot = true;
+    Vector3 MousePosition = new Vector3();
 
     [SerializeField] GameData gameData;
 
@@ -57,6 +52,7 @@ public class PlayerController : MonoBehaviour
 
     void Awake()
     {
+
         m_agent = GetComponent<NavMeshAgent>();
 
         m_input = new DiabloInput();
@@ -67,195 +63,153 @@ public class PlayerController : MonoBehaviour
 
         m_switchWeaponActions = new InputAction[3] { m_input.Main.Weapon1, m_input.Main.Weapon2, m_input.Main.Weapon3 };
 
-        m_saveAction = m_input.Main.SaveAndQuit;
-        m_resetAction = m_input.Main.ResetGame;
+        m_interaction = m_input.Main.Move;
+
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
 
-        for (int i = 0; i < Weapons.Length; i++) 
+        for (int i = 0; i < Weapons.Length; i++)
         {
             if (i == 0)
             {
-                currentWeapon = Weapons[i].GetComponent<IWeapon>();
-                currentWeaponNumber = i;
+                CurrentWeapon = Weapons[i];
+                CurrentWeaponController = CurrentWeapon.GetComponent<IWeapon>();
             }
-            else
-            {
-                Weapons[i].SetActive(false);
-            }
+            else Weapons[i].gameObject.SetActive(false);
         }
 
-        currentWeapon = Weapons[0].GetComponent<IWeapon>();
-
-        EnemyController[] enemies = FindObjectsOfType<EnemyController>();
-
-        SaveSystem.Load(gameData, gameObject, enemies);
-
-        m_agent.speed = baseSpeed * gameData.playerSpeedMultiplier;
+        Debug.Log("Start with " + CurrentWeapon.name);
 
     }
 
     // Update is called once per frame
     void Update()
     {
-        mousePos = Mouse.current.position.value;
-
-        if (m_moveAction.WasPressedThisFrame())
-        {
-
-            MoveTo();
-        }
-
-        switch (m_target.Type)
-        {
-            case TargetType.Enemy:
-                m_agent.destination = m_target.Hit.transform.position;
-                if (Vector3.Distance(transform.position, m_agent.destination) <= currentWeapon.GetRange())
-                {
-                    m_agent.isStopped = true;
-                    transform.LookAt(m_agent.destination);
-                    currentWeapon.Shoot(m_target.Hit.transform.GetComponent<EnemyController>());
-                }
-                break;
-            case TargetType.Floor:
-            case TargetType.None:
-            default:
-                break;
-        }
-
-        for(int i = 0;i < m_switchWeaponActions.Length; i++)
-        {
-            if (m_switchWeaponActions[i].WasPressedThisFrame())
-            {
-                if (Weapons[i] & currentWeapon != Weapons[i].GetComponent<IWeapon>())
-                {
-
-                    Weapons[currentWeaponNumber].SetActive(true);
-                    currentWeapon = Weapons[i].GetComponent<IWeapon>();
-                    currentWeapon.SwitchWeapon();
-                    currentWeaponNumber = i;
-                    break;
-                }
-            }
-        }
-
-        if (m_saveAction.WasPressedThisFrame())
-        {
-            SaveAndQuit();
-        }
-
-        if (m_resetAction.WasPressedThisFrame())
-        {
-            ResetGame();
-        }
-
+        Move();
+        CheckTarget();
+        SwitchWeapon();
     }
 
-    void MoveTo()
+    void Move()
     {
-        RaycastHit hit;
-        
-        if (Physics.Raycast(Camera.main.ScreenPointToRay(mousePos), out hit, 100, LayerMask.GetMask("Floor" )))
-        {
-            string layerName = LayerMask.LayerToName(hit.collider.gameObject.layer);
+        MousePosition = Mouse.current.position.value;
 
-            switch (layerName)
+        if (!m_interaction.WasPressedThisFrame()) { return; }
+
+        RaycastHit hit;
+        if (Physics.Raycast(Camera.main.ScreenPointToRay(MousePosition), out hit, 100, mask))
+        {
+
+            string LayerName = LayerMask.LayerToName(hit.transform.gameObject.layer);
+
+            switch (LayerName)
             {
                 case "Enemy":
                     m_target = new Target(TargetType.Enemy, hit);
                     break;
+
                 case "Floor":
-                    m_target = new Target(TargetType.Floor, hit);
+                    m_target = new Target(TargetType.position, hit);
                     break;
+
                 case "Interactable":
+                    break;
+
                 default:
+                    Debug.Log("???");
                     break;
             }
 
-            m_agent.isStopped = false;
             m_agent.destination = m_target.Hit.point;
-            /*
-            switch (layerName)
+            m_agent.isStopped = false;
+
+
+        }
+    }
+
+    void CheckTarget()
+    {
+        switch (m_target.Type)
+        {
+            case TargetType.Enemy:
+                
+
+                if (m_target.Hit.transform == null)
+                {
+                    m_target = new Target(TargetType.none, new RaycastHit());
+                    return;
+                }
+
+                m_agent.destination = m_target.Hit.transform.position;
+
+                float distanceToEnemy = Vector3.Distance(transform.position, m_target.Hit.transform.position);
+                
+
+                if (distanceToEnemy <= CurrentWeaponController.GetRange())
+                {
+                    m_agent.isStopped = true;
+                    transform.LookAt(m_target.Hit.transform.position);
+                    CurrentWeaponController.Shoot(m_target.Hit.transform.GetComponent<EnemyController>());
+                }
+                break;
+            case TargetType.position:
+            default:
+                break;
+        }
+    }
+
+
+        void OnDrawGizmos()
+        {
+
+            if (m_target.Type != TargetType.none)
             {
-                case LayerMask.GetMask("Floor"):
-                    m_target = new Target();
-                    m_target.type = TargetType.Floor;
-                    m_target.body = null;
-                    m_target.pos = hit.point;
-                    break;
-
-                case 8:
-                    m_target = new Target();
-                    m_target.type = TargetType.Floor;
-                    m_target.body = hit.collider.gameObject;
-                    m_target.pos = hit.point;
-                    break;
-                default:
-                    break;
+                Gizmos.color = new Color(1f, 1f, 0f, 1f);
+                Gizmos.DrawWireSphere(m_agent.destination, 0.25f);
+            }
+            Gizmos.color = Color.red;
 
 
-            }*/
-
-            m_agent.destination = hit.point;
         }
-    }
-     
-    /*void Shoot()
-    {
-        Debug.Log("BANG!!");
-        RaycastHit hit;
-        Physics.Raycast(transform.position, Vector3.Normalize(m_target.Hit.transform.position - transform.position), out hit, attack_range);
-        Debug.DrawLine(transform.position, hit.point, Color.yellow, 0.1f);
-        StartCoroutine(ShootCooldown());    
-    }*/
 
-    IEnumerator ShootCooldown()
-    {
-        yield return new WaitForSeconds(cooldown);
-        can_shoot = true;
-    }
-
-    private void OnDrawGizmos()
-    {
-
-        if(m_target.Type != TargetType.None)
+        void SwitchWeapon()
         {
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(m_agent.destination, 0.5f);
+            // Recorremos la lista de inputs para ver si se ha pulsado uno de los botones
+            for (int i = 0; i < m_switchWeaponActions.Length; i++)
+            {
+                // Si hay más botones que armas terminaremos la ejecución para evitar problemas
+                if (i >= Weapons.Length) return;
+
+                // Comprobamos si se ha pulsado el boton
+                if (m_switchWeaponActions[i].WasPressedThisFrame())
+                {
+                 if (Weapons[i] != null && Weapons[i] != CurrentWeapon)
+                 {
+                    // Desactivamos el arma actual
+                    CurrentWeapon.gameObject.SetActive(false);
+
+                    // Nuestra arma actual pasa a ser el arma i
+                    CurrentWeapon = Weapons[i];
+
+                    // Actualizamos el controlador del arma actual
+                    CurrentWeaponController = CurrentWeapon.GetComponent<IWeapon>();
+
+                    // Activamos el arma actual para que se vea
+                    CurrentWeapon.gameObject.SetActive(true);
+
+                    // Llamamos a la función cambio de arma del controlador
+                    CurrentWeaponController.SwitchWeapon();
+                 }
+                return;
+            }
+            }
+
         }
-        Gizmos.color = Color.red;
-        if(currentWeapon != null)
-        {
-            Gizmos.DrawWireSphere(transform.position, currentWeapon.GetRange());
-        }
-        
-
-    }
-
-    void SaveAndQuit()
-    {
-        gameData.playerPosition = transform.position;
-
-        EnemyController[] enemies = FindObjectsOfType<EnemyController>();
-
-        SaveSystem.Save(gameData, enemies);
-
-        Application.Quit();
-
-    }
-
-    void ResetGame()
-    {
-
-        SaveSystem.DeleteSave();
-
-        gameData.ResetData();
-
-        UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex);
-    }
 
 
+    
 }
+

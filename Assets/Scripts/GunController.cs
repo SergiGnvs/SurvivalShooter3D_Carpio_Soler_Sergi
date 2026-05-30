@@ -1,21 +1,34 @@
 using System.Collections;
 using UnityEngine;
+using UnityEditor;
 
-public class GunController : MonoBehaviour
+public class GunController : MonoBehaviour, IWeapon
 {
 
     [SerializeField] GunData gunData;
+    [SerializeField] TrailData trailData;
+    [SerializeField] LineData lineData;
 
     [SerializeField] GameObject user;
     [SerializeField] Transform barrel;
 
-    int curAmmo;
+    float Damage;
+    float ReloadTime;
+    float Range;
+    float FireRate;
+    int MaxAmmo;
+    int CurrentAmmo;
 
-    bool canShoot = true;
+    bool CanShoot = true;
 
     void Awake()
     {
-        curAmmo = gunData.maxAmmo;
+        Damage = gunData.Damage;
+        ReloadTime = gunData.ReloadTime;
+        Range = gunData.Range;
+        FireRate = gunData.FireRate;
+        MaxAmmo = gunData.MaxAmmo;
+        CurrentAmmo = gunData.MaxAmmo;
 
     }
 
@@ -23,64 +36,78 @@ public class GunController : MonoBehaviour
 
     public void Shoot(EnemyController target)
     {
-        if (canShoot == false) return;
+        if (!CanShoot) return;
+
+        CanShoot = false;
 
         Debug.Log("BANG!!");
 
+
+        Vector3 origin = barrel.position;
+        Vector3 direction = (target.transform.position - origin).normalized;
+
         RaycastHit hit;
-        Vector3 origin = barrel.transform.position;
-        Vector3 direction = user.transform.forward;
-        Vector3 endPoint;
 
-        if(Physics.Raycast(origin, direction, out hit, gunData.range))
+
+        if (Physics.Raycast(origin, direction, out hit, gunData.Range))
         {
-            endPoint = hit.point;
+            EnemyController enemy = hit.transform.GetComponent<EnemyController>();
 
-            if (hit.transform.GetComponent<EnemyController>())
+            if (enemy != null)
             {
-                hit.transform.GetComponent<EnemyController>().GetDamaged(gunData.damage);
+                enemy.GetDamaged(gunData.Damage);
             }
+
+            Transform[] puntos = new Transform[5];
+            puntos[0] = barrel;
+            puntos[1] = hit.transform;
+
+
+        }
+
+        CurrentAmmo--;
+
+        Debug.Log("Ammo: " + CurrentAmmo);
+
+        if (CurrentAmmo <= 0)
+        {
+            Reload();
         }
         else
         {
-            endPoint = origin + direction * gunData.range;
-
+            StartCoroutine(WaitFireRate());
         }
-
-        --curAmmo;
-
-        Debug.Log("Ammo Wallahi: " + curAmmo);
-
-        if (curAmmo == 0) Reload();
-        else StartCoroutine(WaitFireRate());
-
     }
 
     public void Reload()
     {
-        canShoot = false;
+        //CanShoot = false;
         StartCoroutine(Reloading());
     }
 
-    public float GetRange() { return gunData.range; }
+    public float GetRange()
+    {
+        return Range;
+    }
 
     public void SwitchWeapon() 
-    { 
-
+    {
+        Reload();
     }
 
     IEnumerator WaitFireRate()
     {
-        canShoot = false;
-        yield return new WaitForSeconds(gunData.fireRate);
-        canShoot = true;
+        CanShoot = false;
+        yield return new WaitForSeconds(gunData.FireRate);
+        CanShoot = true;
     }
     IEnumerator Reloading()
     {
         Debug.Log("Reloading...");
-        yield return new WaitForSeconds(gunData.reloadTime);
-        curAmmo = gunData.maxAmmo;
-        canShoot = true;
+        CanShoot = false;
+        yield return new WaitForSeconds(gunData.ReloadTime);
+        CurrentAmmo = gunData.MaxAmmo;
+        CanShoot = true;
         Debug.Log("Reloaded");
     }
 
